@@ -62,7 +62,5 @@ Implement an API endpoint for employee login. This includes:
 
 ---
 
-## Notes
-- Ensure regular updates on task progress in the project management tool.
-- Collaboration and communication are key to meeting deadlines.
+
 

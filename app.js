@@ -12,6 +12,10 @@ const app = express();
 app.use(cors());
 //Use the express.json middleware to parse JSON requests
 app.use(express.json());
+//Import the routes
+const routes = require('./routes');
+//Use the routes
+app.use(routes);
 //Start the server
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

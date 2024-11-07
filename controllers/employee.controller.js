@@ -1,6 +1,6 @@
 // controllers/employeeController.js
 const validator = require("validator"); // Import validator for input sanitization
-const employeeService = require("../services/employeeService"); // Import the employee service
+const employeeService = require("../services/employee.service"); // Import the employee service
 
 exports.registerEmployee = async (req, res) => {
   const {
@@ -12,6 +12,34 @@ exports.registerEmployee = async (req, res) => {
     active_employee,
     employee_role,
   } = req.body;
+
+  // Type validation: Ensure that fields expected to be strings are strings
+  if (
+    typeof employee_first_name !== "string" ||
+    typeof employee_last_name !== "string" ||
+    typeof employee_phone !== "string" ||
+    typeof employee_email !== "string" ||
+    typeof employee_password !== "string"
+  ) {
+    // Throw a type error if any field has an unexpected type
+    const invalidType =
+      typeof req.body[
+        Object.keys(req.body).find(
+          (key) =>
+            typeof req.body[key] !== "string" &&
+            [
+              "employee_first_name",
+              "employee_last_name",
+              "employee_phone",
+              "employee_email",
+              "employee_password",
+            ].includes(key)
+        )
+      ];
+    throw new TypeError(
+      "Expected a string but received a ".concat(invalidType)
+    );
+  }
 
   // Sanitize the employee data in the controller to avoid duplication
   const sanitizedData = {

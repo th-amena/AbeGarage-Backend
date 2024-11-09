@@ -11,10 +11,10 @@ async function logIn(req, res, next) {
     console.log(req.body);
     const employeeData = req.body; //extracts the employee data from the request body
      // Validate that the password length is greater than 8 characters
-     if (employeeData.employee_password.length < 8) {
+     if (employeeData.employee_password.length < 6) {
       return res.status(400).json({
         status: "fail",
-        message: "Password must be at least 8 characters long",
+        message: "Password must be at least 6 characters long",
       });
     }
     // Call the logIn method from the login service
@@ -46,7 +46,9 @@ async function logIn(req, res, next) {
       message: "Employee logged in successfully",
       data: sendBack,
     });
-  } catch (error) {}
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 // Export the functions

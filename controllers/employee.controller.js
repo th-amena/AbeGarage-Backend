@@ -48,7 +48,7 @@ exports.registerEmployee = async (req, res) => {
     email: validator.normalizeEmail(employee_email), // Normalize email
     password: employee_password, // Password will be hashed in the service, so no need to sanitize here
     active_status: active_employee !== undefined ? active_employee : 1,
-    role: employee_role || "employee", 
+    role: employee_role || "1", 
   };
   // Validate: Ensure all required fields are provided
   if (

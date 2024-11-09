@@ -12,3 +12,4 @@ router.use(employeeRoutes);
 router.use(loginRoutes);
 // Export the router
 module.exports = router;
+

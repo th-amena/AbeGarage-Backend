@@ -4,13 +4,17 @@ const express = require('express');
 require('dotenv').config();
 //Import the cors module
 const cors = require('cors');
+// Import the router module
+const router = require('./routes');
 //Create a variable to store the port number
 const PORT = process.env.PORT;
-//Create the web server 
+
+// Create the web server
 const app = express();
-//Use the cors middleware
+// Use the cors middleware
 app.use(cors());
-//Use the express.json middleware to parse JSON requests
+
+// Use the express.json middleware to parse JSON requests
 app.use(express.json());
 //Import the routes
 const routes = require('./routes');
@@ -18,5 +22,7 @@ const routes = require('./routes');
 app.use(routes);
 //Start the server
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
+
+module.exports = app;

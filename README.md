@@ -1,66 +1,35 @@
-# AbeGarage Backend Tasks
+# Sprint Two Backend Tasks for AbeGarage
 
-## Overview
-This document outlines the tasks for the AbeGarage backend development project. Each task includes a title, description, assignees, and a deadline to ensure clarity and accountability within the team.
-
----
-
-### Task ID: EAGP-BE-001
-**Task Title:** Project Set up, Backend Development Environment  
+## Task ID: EAGP-BE-006
+**Task Title:** Implement Authorization Middleware and Create "Add Employee" API Endpoint  
 **Description:**  
-Set up the foundational Node.js environment for the web application, including:  
-- Project folder structure  
-- Node and npm installation  
-- Essential packages  
-
-**Assignees:** Bereket, Feysel  
-**Deadline:** Monday, 11/4/2024  
+Create a POST endpoint for adding employees with an authorization system that restricts access to users with the "admin" role. Implement token verification and role checking in the middleware.  
+**Assignees:** Tolera, Liyuwork, Ansar  
+**Time Frame:** 2 days  
 
 ---
 
-### Task ID: EAGP-BE-002
-**Task Title:** Set up Git for Version Control  
+## Task ID: EAGP-BE-007
+**Task Title:** Develop API to Get All Employees  
 **Description:**  
-Initialize Git repositories for both backend and frontend with `.gitignore` configured. Set up collaboration on GitHub.  
-
-**Assignees:** Gash Dawit, Nati  
-**Deadline:** Sunday, 11/3/2024  
+Implement a GET endpoint to retrieve all employee records with authorization middleware to ensure only admins can access it. Include JWT token verification and handle both successful and error responses.  
+**Assignees:** Hanna, Eleni, Ephrem  
+**Time Frame:** 2 days  
 
 ---
 
-### Task ID: EAGP-BE-003
-**Task Title:** Set up MySQL Database  
+## Task ID: EAGP-BE-008
+**Task Title:** Implement Update Employee API  
 **Description:**  
-Install MySQL, create the database, and configure connections to support backend API functionality.  
-
-**Assignees:** Eyoba, Misgana  
-**Deadline:** Monday, 11/4/2024  
+Develop a PUT endpoint to update employee details, including secure handling of password updates. Validate inputs, and handle success and error responses appropriately.  
+**Assignees:** Bitania, Edo, Wende, Feysel  
+**Time Frame:** 3 days  
 
 ---
 
-### Task ID: EAGP-BE-004
-**Task Title:** Develop the Employee Registration API  
+## Task ID: EAGP-BE-009
+**Task Title:** Implement Delete Employee API  
 **Description:**  
-Develop and test an API endpoint for employee registration. Ensure to handle:  
-- Data validation  
-- Error responses  
-
-**Assignees:** Selam Tessera, Betelhem, Misikir  
-**Deadline:** Tuesday, 11/5/2024  
-
----
-
-### Task ID: EAGP-BE-005
-**Task Title:** Develop the Employee Login API  
-**Description:**  
-Implement an API endpoint for employee login. This includes:  
-- Authentication handling  
-- Token generation  
-
-**Assignees:** Sumeya, Abel, Wengel  
-**Deadline:** Tuesday, 11/5/2024  
-
----
-
-
-
+Create a DELETE endpoint to remove employee records securely, with validation for the employee's existence. Include optional security for the ID parameter and handle success and error responses.  
+**Assignees:** Biruk, Kedir, Selam  
+**Time Frame:** 3 days  

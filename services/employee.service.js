@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 
 const DEFAULT_ROLE = "2"; // Default role assignment
 
-exports.registerEmployee = async (employeeData) => {
+const registerEmployee = async (employeeData) => {
   const {
     first_name,
     last_name,
@@ -105,6 +105,7 @@ async function getEmployeeByEmail(employee_email) {
   return rows;
 }
 module.exports = {
+  registerEmployee,
   getEmployeeByEmail
 };
 //     // Hash the password

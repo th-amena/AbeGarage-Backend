@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-//Import the express module
-const express = require('express');
-//Import express router
-const router = express.Router();
-//Import the install routes
-const installRouter = require('./install.routes');
-//Add the install routes
-router.use(installRouter)
-//Export the routes
-module.exports = router
-=======
 // Import the express module
 const express = require("express");
 // Call the router method from express to create the router
@@ -24,4 +12,4 @@ router.use(employeeRoutes);
 router.use(loginRoutes);
 // Export the router
 module.exports = router;
->>>>>>> 2c98c8cbf3a0c4c5862ebef736947bb68094c7f0
+

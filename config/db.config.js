@@ -9,7 +9,6 @@ const connection = mysql.createPool({
     // socketPath: process.env.DB_SOCKET
 });
 //Check the connection
-
 connection.getConnection((err) => {
     if (err) {
         console.log(err.message);

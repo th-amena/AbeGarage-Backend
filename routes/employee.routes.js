@@ -11,7 +11,7 @@ const {
 // Middleware (validateEmployeeRegistration): Runs first and validates the request data to ensure it meets requirements (e.g., required fields, correct formats). If validation fails, it returns an error response; if it succeeds, the request is passed on.
 // Controller (employeeController.registerEmployee): Executes the registration logic, including saving the new employee to the database. This method handles the main business logic after validation.
 router.post(
-  "/employee",
+  "/api/employee",
   validateEmployeeRegistration,
   employeeController.registerEmployee
 );

@@ -40,7 +40,6 @@ exports.registerEmployee = async (req, res) => {
       "Expected a string but received a ".concat(invalidType)
     );
   }
-
   // Sanitize the employee data in the controller to avoid duplication
   const sanitizedData = {
     first_name: validator.escape(employee_first_name), // Escape harmful characters
@@ -49,7 +48,7 @@ exports.registerEmployee = async (req, res) => {
     email: validator.normalizeEmail(employee_email), // Normalize email
     password: employee_password, // Password will be hashed in the service, so no need to sanitize here
     active_status: active_employee !== undefined ? active_employee : 1, // Default to active (1) if not provided
-    role: employee_role || "employee", // Default to 'employee' if no role provided
+    role: employee_role || "employee", 
   };
   // Validate: Ensure all required fields are provided
   if (

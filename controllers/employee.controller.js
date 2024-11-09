@@ -51,7 +51,6 @@ exports.registerEmployee = async (req, res) => {
     active_status: active_employee !== undefined ? active_employee : 1, // Default to active (1) if not provided
     role: employee_role || "employee", // Default to 'employee' if no role provided
   };
-
   // Validate: Ensure all required fields are provided
   if (
     !sanitizedData.first_name ||
@@ -77,6 +76,7 @@ exports.registerEmployee = async (req, res) => {
       last_name: sanitizedData.last_name,
       phone: sanitizedData.phone,
       email: sanitizedData.email,
+      password:sanitizedData.password,
       active_status: sanitizedData.active_status,
       role: sanitizedData.role,
     };

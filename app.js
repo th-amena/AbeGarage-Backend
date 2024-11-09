@@ -6,11 +6,10 @@ require("dotenv").config();
 const cors = require("cors");
 
 // Create a variable to store the port number
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 
 // Create the web server
 const app = express();
-
 // Use the cors middleware
 app.use(cors());
 

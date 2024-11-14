@@ -102,3 +102,20 @@ exports.registerEmployee = async (req, res) => {
     });
   }
 };
+// Create the getAllEmployees controller 
+exports.getAllEmployees = async (req, res, next) => {
+  // Call the getAllEmployees method from the employee service 
+  const employees = await employeeService.getAllEmployees();
+  // console.log(employees);
+  if (!employees) {
+    res.status(400).json({
+      error: "Failed to get all employees!"
+    });
+  } else {
+    res.status(200).json({
+      status: "success",
+      data: employees,
+    });
+  }
+}
+

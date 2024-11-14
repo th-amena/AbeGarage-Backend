@@ -16,4 +16,7 @@ router.post(
   employeeController.registerEmployee
 );
 
+// Create a route to handle the get all employees request on get
+router.get("/api/employees", employeeController.getAllEmployees);
+
 module.exports = router;

@@ -13,7 +13,6 @@ exports.registerEmployee = async (req, res) => {
     employee_role,
   } = req.body;
   console.log(employee_role);
-  
 
   // Type validation: Ensure that fields expected to be strings are strings
   if (
@@ -50,7 +49,7 @@ exports.registerEmployee = async (req, res) => {
     email: validator.normalizeEmail(employee_email), // Normalize email
     password: employee_password, // Password will be hashed in the service, so no need to sanitize here
     active_status: active_employee !== undefined ? active_employee : 1,
-    role: employee_role, 
+    role: employee_role,
   };
   // Validate: Ensure all required fields are provided
   if (
@@ -77,7 +76,7 @@ exports.registerEmployee = async (req, res) => {
       last_name: sanitizedData.last_name,
       phone: sanitizedData.phone,
       email: sanitizedData.email,
-      password:sanitizedData.password,
+      password: sanitizedData.password,
       active_status: sanitizedData.active_status,
       role: sanitizedData.role,
     };

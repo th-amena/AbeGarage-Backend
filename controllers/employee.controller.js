@@ -120,3 +120,34 @@ exports.getAllEmployees = async (req, res, next) => {
   }
 }
 
+exports.deleteEmployee = async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).json({
+      error: "Bad Request",
+      message: "Employee ID is required",
+    });
+  }
+
+  try {
+    const result = await employeeService.deleteEmployeeById(id);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        error: "Not Found",
+        message: "Employee not found",
+      });
+    }
+
+    res.status(200).json({
+      message: "Employee deleted successfully",
+      success: true,
+    });
+  } catch (error) {
+    console.error("Error deleting employee:", error);
+    res.status(500).json({
+      error: "Internal Server Error",
+      message: error.message || "An unexpected error occurred.",
+    });
+  }
+};

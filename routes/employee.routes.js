@@ -19,7 +19,7 @@ router.post(
   employeeController.registerEmployee // Registers the employee if all checks pass
 );
 router.get(
-  "/api/employees",
+  "/api/admin/employees",
   authMiddleware.verifyToken, // Ensures the user is authenticated
   authMiddleware.isAdmin, // Ensures the user has admin privileges
   employeeController.getAllEmployees

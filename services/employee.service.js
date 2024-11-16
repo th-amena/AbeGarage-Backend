@@ -111,10 +111,32 @@ async function getAllEmployees() {
   const [rows] = await conn.query(query);
   return rows;
 }
+
+const deleteEmployeeById = async (employeeId) => {
+ try {
+   // Delete employee from all related tables
+   await conn.query("DELETE FROM employee_pass WHERE employee_id = ?", [
+     employeeId,
+   ]);
+   await conn.query("DELETE FROM employee_info WHERE employee_id = ?", [
+     employeeId,
+   ]);
+   await conn.query("DELETE FROM employee_role WHERE employee_id = ?", [
+     employeeId,
+   ]);
+   await conn.query("DELETE FROM employee WHERE employee_id = ?", [employeeId]);
+   return "success";
+ } catch (error) {
+   console.log(error);
+   return error;
+ }
+};
+
 module.exports = {
   registerEmployee,
   getEmployeeByEmail,
-  getAllEmployees
+  getAllEmployees,
+  deleteEmployeeById
 };
 //     // Hash the password
 //     const salt=await bcrypt.genSalt(10)

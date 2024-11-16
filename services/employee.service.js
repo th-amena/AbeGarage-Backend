@@ -91,7 +91,7 @@ const registerEmployee = async (employeeData) => {
     return null;
   }
   return createdEmployee;
-};           
+};
 // Function to get Employee ID by UUID
 async function getEmployeeId(uuid) {
   const query = "SELECT employee_id FROM employee WHERE employee_uuid = ?";
@@ -115,7 +115,7 @@ async function getAllEmployees() {
 //A function to update the employee
 async function updateEmployee(employeeId, updatedData) {
   const queryCheck = "SELECT * FROM employee WHERE employee_id = ?";
-  try { 
+  try {
     // Array to store any error messages if updates fail in individual tables
     const errors = [];
     // Check if the employee exists
@@ -206,10 +206,33 @@ async function updateEmployee(employeeId, updatedData) {
     throw new Error("Unexpected server error");
   }
 }
+//A function to delete the employee
+async function deleteEmployee(employeeId) {
+  try {
+    // Delete employee from all related tables
+    await conn.query("DELETE FROM employee_pass WHERE employee_id = ?", [
+      employeeId,
+    ]);
+    await conn.query("DELETE FROM employee_info WHERE employee_id = ?", [
+      employeeId,
+    ]);
+    await conn.query("DELETE FROM employee_role WHERE employee_id = ?", [
+      employeeId,
+    ]);
+    await conn.query("DELETE FROM employee WHERE employee_id = ?", [
+      employeeId,
+    ]);
+    return "success";
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+}
 module.exports = {
   registerEmployee,
   getEmployeeByEmail,
   updateEmployee,
   getAllEmployees,
   getEmployeeId,
+  deleteEmployee,
 };

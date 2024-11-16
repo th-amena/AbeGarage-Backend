@@ -1,8 +1,10 @@
-// controllers/employeeController.js
-const validator = require("validator"); // Import validator for input sanitization
-const employeeService = require("../services/employee.service"); // Import the employee service
+//Import validator for input sanitization
+const validator = require("validator"); 
+// Import the employee service
+const employeeService = require("../services/employee.service"); 
 //Import bcrypt module
 const bcrypt = require("bcrypt");
+//Create the registeration employee contollers
 const registerEmployee = async (req, res) => {
   const {
     employee_first_name,
@@ -13,6 +15,7 @@ const registerEmployee = async (req, res) => {
     active_employee,
     employee_role,
   } = req.body;
+  console.log(employee_role);
 
   // Type validation: Ensure that fields expected to be strings are strings
   if (
@@ -49,7 +52,7 @@ const registerEmployee = async (req, res) => {
     email: validator.normalizeEmail(employee_email), // Normalize email
     password: employee_password, // Password will be hashed in the service, so no need to sanitize here
     active_status: active_employee !== undefined ? active_employee : 1,
-    role: employee_role || "1", 
+    role: employee_role,
   };
   // Validate: Ensure all required fields are provided
   if (
@@ -76,7 +79,7 @@ const registerEmployee = async (req, res) => {
       last_name: sanitizedData.last_name,
       phone: sanitizedData.phone,
       email: sanitizedData.email,
-      password:sanitizedData.password,
+      password: sanitizedData.password,
       active_status: sanitizedData.active_status,
       role: sanitizedData.role,
     };
@@ -119,6 +122,7 @@ async function getAllEmployees(req, res, next) {
     });
   }
 }
+//Create the update employee controllers
 async function updateEmployee(req, res) {
   
   try {
@@ -179,8 +183,31 @@ async function updateEmployee(req, res) {
     return res.status(500).json({ message: "Unexpected server error" });
   }
 }
+//Create delete employee controller
+async function deleteEmployee(req, res) {
+  const employeeUuid = req.params.id;
+  try {
+    // Check if employee exists
+    const [employee] = await employeeService.getEmployeeId(employeeUuid);
+    if (!employee) {
+      return res.status(404).json({ message: "Employee not found" });
+    }
+
+    // Call the service to delete employee
+    const deleteResult = await employeeService.deleteEmployee(
+      employee.employee_id
+    );
+    if (deleteResult === "success") {
+      return res.status(200).json({ message: "Employee deleted successfully" });
+    }
+  } catch (error) {
+    console.error("Error in deleteEmployee:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
 module.exports = {
   registerEmployee,
   getAllEmployees,
   updateEmployee,
+  deleteEmployee
 };

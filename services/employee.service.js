@@ -5,15 +5,8 @@ const bcrypt = require("bcrypt");
 const DEFAULT_ROLE = "2"; // Default role assignment
 
 const registerEmployee = async (employeeData) => {
-  const {
-    first_name,
-    last_name,
-    phone,
-    email,
-    password,
-    active_status,
-    role,
-  } = employeeData;
+  const { first_name, last_name, phone, email, password, active_status, role } =
+    employeeData;
 
   // Check if email is already registered
   const [existingUser] = await conn.query(
@@ -32,10 +25,7 @@ const registerEmployee = async (employeeData) => {
     // Insert email and active status into employee table
     const query1 =
       "INSERT INTO employee (employee_email, active_employee) VALUES (?, ?)";
-    const [rows1] = await conn.query(query1, [
-      email,
-      active_status,
-    ]);
+    const [rows1] = await conn.query(query1, [email, active_status]);
 
     if (rows1.affectedRows !== 1) {
       console.error("Failed to insert into employee table");
@@ -97,10 +87,11 @@ const registerEmployee = async (employeeData) => {
     return null;
   }
   return createdEmployee;
-}
+};
 // A function to get employee by email
 async function getEmployeeByEmail(employee_email) {
-  const query = "SELECT * FROM employee INNER JOIN employee_info ON employee.employee_id = employee_info.employee_id INNER JOIN employee_pass ON employee.employee_id = employee_pass.employee_id INNER JOIN employee_role ON employee.employee_id = employee_role.employee_id WHERE employee.employee_email = ?";
+  const query =
+    "SELECT * FROM employee INNER JOIN employee_info ON employee.employee_id = employee_info.employee_id INNER JOIN employee_pass ON employee.employee_id = employee_pass.employee_id INNER JOIN employee_role ON employee.employee_id = employee_role.employee_id WHERE employee.employee_email = ?";
   const [rows] = await conn.query(query, [employee_email]);
   return rows;
 }
@@ -113,30 +104,32 @@ async function getAllEmployees() {
 }
 
 const deleteEmployeeById = async (employeeId) => {
- try {
-   // Delete employee from all related tables
-   await conn.query("DELETE FROM employee_pass WHERE employee_id = ?", [
-     employeeId,
-   ]);
-   await conn.query("DELETE FROM employee_info WHERE employee_id = ?", [
-     employeeId,
-   ]);
-   await conn.query("DELETE FROM employee_role WHERE employee_id = ?", [
-     employeeId,
-   ]);
-   await conn.query("DELETE FROM employee WHERE employee_id = ?", [employeeId]);
-   return "success";
- } catch (error) {
-   console.log(error);
-   return error;
- }
+  try {
+    // Delete employee from all related tables
+    await conn.query("DELETE FROM employee_pass WHERE employee_id = ?", [
+      employeeId,
+    ]);
+    await conn.query("DELETE FROM employee_info WHERE employee_id = ?", [
+      employeeId,
+    ]);
+    await conn.query("DELETE FROM employee_role WHERE employee_id = ?", [
+      employeeId,
+    ]);
+    await conn.query("DELETE FROM employee WHERE employee_id = ?", [
+      employeeId,
+    ]);
+    return "success";
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
 };
 
 module.exports = {
   registerEmployee,
   getEmployeeByEmail,
   getAllEmployees,
-  deleteEmployeeById
+  deleteEmployeeById,
 };
 //     // Hash the password
 //     const salt=await bcrypt.genSalt(10)
@@ -161,4 +154,4 @@ module.exports = {
 //     };
 //   } catch (error) {
 //     throw new Error("Failed to register employee: " + error.message);
-// 
+//

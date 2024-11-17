@@ -26,3 +26,27 @@ app.listen(PORT, () => {
   console.log(`database connected`);
 });
 module.exports = app;
+
+// *************************************************************
+// app.js
+// const express = require('express');
+// require('dotenv').config();  // Load environment variables from .env
+// const cors = require('cors');
+// const customerRoutes = require('./routes/customerRoutes');  // Import customer routes
+
+// const app = express();
+
+// // Middleware
+// app.use(cors());  // Enable CORS
+// app.use(express.json());  // Parse JSON request bodies
+
+// // Use the customer routes
+// app.use('/api/customers', customerRoutes);  // Mount customer routes at /api/customers
+
+// // Start the server
+// const PORT = process.env.PORT || 8000;  // Use PORT from .env or default to 8000
+// app.listen(PORT, () => {
+//   console.log(`Server running on port ${PORT}`);
+// });
+
+// module.exports = app;

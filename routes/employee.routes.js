@@ -25,7 +25,6 @@ router.get(
   employeeController.getAllEmployees
 );
 
-
 // PUT request to update employee details
 router.put(
   "/api/employee/:id",

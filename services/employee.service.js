@@ -98,6 +98,7 @@ async function getEmployeeId(uuid) {
   const [rows] = await conn.query(query, [uuid]);
   return rows;
 }
+
 // A function to get employee by email
 async function getEmployeeByEmail(employee_email) {
   const query =
@@ -112,6 +113,29 @@ async function getAllEmployees() {
   const [rows] = await conn.query(query);
   return rows;
 }
+
+
+//A function to get single employee
+async function getEmployeeById(uuid) {
+  const query = `
+    SELECT 
+      e.employee_id, e.employee_uuid, e.employee_email, e.active_employee, 
+      e.added_date, ei.employee_first_name, ei.employee_last_name, 
+      ei.employee_phone, er.company_role_id, cr.company_role_name
+    FROM employee AS e
+    JOIN employee_info AS ei ON e.employee_id = ei.employee_id
+    JOIN employee_role AS er ON e.employee_id = er.employee_id
+    JOIN company_roles AS cr ON er.company_role_id = cr.company_role_id
+    WHERE e.employee_uuid = ?;
+  `;
+  try {
+    const [result] = await conn.query(query, [uuid]);
+    return result[0]; // Return the first matching employee or undefined if not found
+  } catch (error) {
+    throw new Error("Failed to fetch employee: " + error.message);
+  }
+  }
+
 //A function to update the employee
 async function updateEmployee(employeeId, updatedData) {
   const queryCheck = "SELECT * FROM employee WHERE employee_id = ?";
@@ -234,5 +258,9 @@ module.exports = {
   updateEmployee,
   getAllEmployees,
   getEmployeeId,
+  getEmployeeById,
   deleteEmployee,
 };
+
+
+

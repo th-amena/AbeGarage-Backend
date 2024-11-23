@@ -191,17 +191,17 @@ async function updateEmployee(employeeId, updatedData) {
     }
 
     // Update `employee_pass` table (password)
-    const queryPass = `
-        UPDATE employee_pass 
-        SET employee_password_hashed = ? 
-        WHERE employee_id = ?
-      `;
-    const [resultPass] = await conn.query(queryPass, [
-      updatedData.employee_password,
-      employeeId,
-    ]);
-    if (resultPass.affectedRows === 0)
-      errors.push("Failed to update employee_pass table");
+    // const queryPass = `
+    //     UPDATE employee_pass 
+    //     SET employee_password_hashed = ? 
+    //     WHERE employee_id = ?
+    //   `;
+    // const [resultPass] = await conn.query(queryPass, [
+    //   updatedData.employee_password,
+    //   employeeId,
+    // ]);
+    // if (resultPass.affectedRows === 0)
+    //   errors.push("Failed to update employee_pass table");
 
     // Update `employee_role` table (role)
     if (updatedData.company_role_id) {

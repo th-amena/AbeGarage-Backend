@@ -72,5 +72,33 @@ const addCustomer = async (customerData) => {
     return null; // Return null on failure, or handle it differently
   }
 };
+//A service function to get single customer
+const getCustomerByHash = async(hash)=>{
+  try {
+    const query = `
+            SELECT 
+                ci.customer_id,
+                ci.customer_email,
+                ci.customer_phone_number,
+                ci.customer_added_date,
+                ci.customer_hash,
+                info.customer_first_name,
+                info.customer_last_name,
+                info.active_customer_status
+            FROM customer_identifier AS ci
+            INNER JOIN customer_info AS info
+            ON ci.customer_id = info.customer_id
+            WHERE ci.customer_hash = ?
+        `;
 
-module.exports = { addCustomer };
+    const [rows] = await conn.query(query, [hash]);
+
+    // Return the customer if found, otherwise return null
+    return rows.length > 0 ? rows[0] : null;
+  } catch (error) {
+    console.error("Error in getCustomerByHash service:", error.message);
+    throw error;
+  }
+}
+
+module.exports = { addCustomer,getCustomerByHash };

@@ -9,5 +9,8 @@ router.post(
   validateCustomer,
   customerController.addCustomer
 );
+// Route to get a single customer by hash
+router.get('/api/customer/:hash',customerController.getSingleCustomerByHash);
+// Route to update customer information
 
 module.exports = router;

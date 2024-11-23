@@ -25,5 +25,37 @@ const addCustomer = async (req, res) => {
       .json({ message: "Internal server error", error: error.message });
   }
 };
+//Controller function to handle getting all customers
+const getSingleCustomerByHash = async (req,res)=>{
+  try {
+    const { hash } = req.params;
 
-module.exports = { addCustomer };
+    // Validate hash
+    if (!hash || typeof hash !== 'string' || hash.trim().length === 0) {
+        return res.status(400).json({
+            error: 'Bad Request',
+            message: 'The customer hash provided is invalid or missing.',
+        });
+    }
+
+    // Fetch customer data
+    const customer = await customerService.getCustomerByHash(hash);
+
+    if (!customer) {
+        return res.status(404).json({
+            error: 'Customer not found',
+            message: 'The customer hash provided does not exist.',
+        });
+    }
+
+    // Return customer data
+    res.status(200).json(customer);
+} catch (error) {
+    console.error('Error fetching customer:', error.message);
+    res.status(500).json({
+        error: 'Internal Server Error',
+        message: 'An error occurred while fetching customer data.',
+    });
+}
+}
+module.exports = { addCustomer,getSingleCustomerByHash };

@@ -114,7 +114,6 @@ async function getAllEmployees() {
   return rows;
 }
 
-
 //A function to get single employee
 async function getEmployeeById(uuid) {
   const query = `
@@ -134,7 +133,7 @@ async function getEmployeeById(uuid) {
   } catch (error) {
     throw new Error("Failed to fetch employee: " + error.message);
   }
-  }
+}
 
 //A function to update the employee
 async function updateEmployee(employeeId, updatedData) {
@@ -192,8 +191,8 @@ async function updateEmployee(employeeId, updatedData) {
 
     // Update `employee_pass` table (password)
     // const queryPass = `
-    //     UPDATE employee_pass 
-    //     SET employee_password_hashed = ? 
+    //     UPDATE employee_pass
+    //     SET employee_password_hashed = ?
     //     WHERE employee_id = ?
     //   `;
     // const [resultPass] = await conn.query(queryPass, [
@@ -204,6 +203,7 @@ async function updateEmployee(employeeId, updatedData) {
     //   errors.push("Failed to update employee_pass table");
 
     // Update `employee_role` table (role)
+
     if (updatedData.company_role_id) {
       const queryRole = `
         UPDATE employee_role 
@@ -252,6 +252,9 @@ async function deleteEmployee(employeeId) {
     return error;
   }
 }
+
+
+// exporting functions
 module.exports = {
   registerEmployee,
   getEmployeeByEmail,
@@ -261,6 +264,3 @@ module.exports = {
   getEmployeeById,
   deleteEmployee,
 };
-
-
-

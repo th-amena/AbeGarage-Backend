@@ -10,4 +10,9 @@ router.post(
   customerController.addCustomer
 );
 
+// Route to update customer information
+router.put('/api/update-customer/:hash', customerController.updateCustomer);
+
+
 module.exports = router;
+

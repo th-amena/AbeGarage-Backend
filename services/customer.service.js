@@ -72,5 +72,78 @@ const addCustomer = async (customerData) => {
     return null; // Return null on failure, or handle it differently
   }
 };
+const getCustomerId = async (hash)=> {
+  try {
+    const query = `
+      SELECT customer_id 
+      FROM customer_identifier 
+      WHERE customer_hash = ?
+    `;
+    const [result] = await conn.execute(query, [hash]);
+    return result;
+  } catch (error) {
+    console.error("Error in getCustomerId:", error.message);
+    throw new Error("Failed to fetch customer ID");
+  }
+}
+// Update customer details by hash
+const updateCustomer = async (hash, updatedData) => {
+  try {
+    const errors = []; // Array to track any update failures.
 
-module.exports = { addCustomer };
+    // Step 1: Retrieve the customer_id using the hash
+    const result = await getCustomerId(hash);
+    if (!result || result.length === 0) {
+      return "not_found"; // Return if the customer does not exist.
+    }
+    const customer_id = result[0].customer_id;
+
+    // Step 2: Update the customer_identifier table (if applicable)
+    if (updatedData.customer_phone_number) {
+      const queryIdentifier = `
+        UPDATE customer_identifier 
+        SET customer_phone_number = COALESCE(?, customer_phone_number)
+        WHERE customer_id = ?
+      `;
+      const [resultIdentifier] = await conn.execute(queryIdentifier, [
+        updatedData.customer_phone_number,
+        customer_id,
+      ]);
+
+      if (resultIdentifier.affectedRows === 0) {
+        errors.push("Failed to update customer_identifier table");
+      }
+    }
+
+    // Step 3: Update the customer_info table (first name, last name)
+    if (updatedData.customer_first_name || updatedData.customer_last_name) {
+      const queryInfo = `
+        UPDATE customer_info 
+        SET customer_first_name = COALESCE(?, customer_first_name),
+            customer_last_name = COALESCE(?, customer_last_name)
+        WHERE customer_id = ?
+      `;
+      const [resultInfo] = await conn.execute(queryInfo, [
+        updatedData.customer_first_name,
+        updatedData.customer_last_name,
+        customer_id,
+      ]);
+
+      if (resultInfo.affectedRows === 0) {
+        errors.push("Failed to update customer_info table");
+      }
+    }
+
+    // Step 4: Return Results
+    if (errors.length > 0) {
+      return { success: false, message: "Some updates failed", errors };
+    } else {
+      return { success: true, message: "Customer updated successfully" };
+    }
+  } catch (error) {
+    console.error("Error in updateCustomer:", error.message);
+    throw new Error("Unexpected server error");
+  }
+};
+
+module.exports = { addCustomer, updateCustomer };

@@ -44,8 +44,8 @@ const isAdmin = async (req, res, next) => {
       });
     }
 
-    // Check if employee has admin role
-    if (employee[0].company_role_id === parseInt(process.env.ADMIN_ROLE_ID)) {
+    // Check if employee has admin role and it has value 3 it can get access to the page
+    if (employee[0].company_role_id === 3) {
       return next(); // Proceed to the next middleware or controller
     } else {
       return res.status(403).send({

@@ -1,7 +1,8 @@
 //Import the express module
 const express = require("express");
 //Import the dotenv module and call the config method
-require("dotenv").config();
+const dotenv = require("dotenv");
+dotenv.config()
 //Import the cors module
 const cors = require("cors");
 // Import the router module

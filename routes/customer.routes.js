@@ -13,4 +13,9 @@ router.post(
 router.get('/api/customer/:hash',customerController.getSingleCustomerByHash);
 // Route to update customer information
 
+// Route to update customer information
+router.put('/api/update-customer/:hash', customerController.updateCustomer);
+
+
 module.exports = router;
+

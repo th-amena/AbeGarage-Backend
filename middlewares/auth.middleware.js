@@ -65,12 +65,10 @@ const isAdmin = async (req, res, next) => {
       });
     }
 
-    // Check if the employee has the admin role
-    const adminRoleId = parseInt(process.env.ADMIN_ROLE_ID, 10);
-    if (employee[0].company_role_id !== 3) {
-      console.error(
-        `Employee ${employee_email} does not have admin privileges.`
-      );
+    // Check if employee has admin role
+    if (employee[0].company_role_id === 3) {
+      return next(); // Proceed to the next middleware or controller
+    } else {
       return res.status(403).send({
         status: "fail",
         message: "Access denied. Not an admin!",

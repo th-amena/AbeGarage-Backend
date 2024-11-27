@@ -19,17 +19,25 @@ router.get(
 );
 
 // Route to search for customers by search term (requires token only)
-router.get(
-   "/api/customers/search",
-   authMiddleware.verifyToken, // Check for valid token
-   customerController.searchCustomers // Route for search
-);
+// router.get(
+//    "/api/customers/search",
+//    authMiddleware.verifyToken, // Check for valid token
+//    customerController.searchCustomers // Route for search
+// );
 
 // Route to get a customer by ID (requires token only)
-router.get(
-   "/api/customers/:id",
-   authMiddleware.verifyToken, // Check for valid token
-   customerController.getCustomerById
-);
+// router.get(
+//    "/api/customers/:id",
+//    authMiddleware.verifyToken, // Check for valid token
+//    customerController.getCustomerById
+// );
+// Route to get a single customer by hash
+router.get('/api/customer/:hash',customerController.getSingleCustomerByHash);
+// Route to update customer information
+
+// Route to update customer information
+router.put('/api/update-customer/:hash', customerController.updateCustomer);
+
 
 module.exports = router;
+

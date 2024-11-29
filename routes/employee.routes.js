@@ -25,6 +25,13 @@ router.get(
   employeeController.getAllEmployees
 );
 
+router.get(
+  "/api/employee/:uuid",
+  authMiddleware.verifyToken, // Ensures the user is authenticated
+  authMiddleware.isAdmin, // Ensures the user has admin privileges
+  employeeController.getSingleEmployee
+);
+
 // PUT request to update employee details
 router.put(
   "/api/employee/:id",

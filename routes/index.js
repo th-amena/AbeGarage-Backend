@@ -5,8 +5,12 @@ const router = express.Router();
 // Import the employee routes
 const employeeRoutes = require("./employee.routes");
 
+
 //Import the install router
 const installRouter = require("./install.routes");
+
+// Import the service router
+const serviceRouter = require('./service.routes')
 //Add the isntall router to the main router
 router.use(installRouter);
 // Import the login routes
@@ -19,6 +23,8 @@ router.use(employeeRoutes);
 router.use(installRoutes);
 // Add the login routes to the main router
 router.use(loginRoutes);
+//// Add the service routes to the main router
+router.use(serviceRouter)
 // Export the router
 module.exports = router;
 

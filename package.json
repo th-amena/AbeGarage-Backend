@@ -9,10 +9,7 @@
   "author": "Group-3",
   "license": "ISC",
   "dependencies": {
-<<<<<<< HEAD
-=======
     "axios": "^1.7.7",
->>>>>>> 3f7bb14 (Update global context setup)
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",

@@ -1,4 +1,6 @@
 const serviceService = require("../services/service.service");
+ 
+
 // Controller to handle adding a service
 const addService = async (req, res) => {
    const { service_name, service_description } = req.body; // Get data from request body
@@ -69,8 +71,32 @@ const updateService = async (req, res) => {
    }
 };
 
+const getAllServices = async (req, res) => {
+   try {
+     const services = await serviceService.getAllService();
+ 
+     if (!services) {
+       return res.status(400).json({ message: "Failed to get all services!" });
+     } else {
+       return res.status(200).json({
+         services,
+       });
+     }
+   } catch (error) {
+     console.error(error); // Log the error for debugging purposes
+ 
+     // Check if the error indicates a 401 Unauthorized status
+     if (error.status === 401) {
+       return res.status(401).json({ message: "Unauthorized" });
+     }
+ 
+     return res.status(500).json({ message: "Internal Server Error" });
+   }
+ };
+
 module.exports = {
    addService,
    updateService,
+   getAllServices
    
 };

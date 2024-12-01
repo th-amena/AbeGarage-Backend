@@ -22,6 +22,5 @@ router.use(serviceRoutes);
 
 router.use(loginRoutes);
 // Export the router
-// Add the service router to the main router
-router.use(serviceRouter);
+
 module.exports = router;

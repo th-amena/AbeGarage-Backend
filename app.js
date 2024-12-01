@@ -10,7 +10,7 @@ const router = require("./routes");
 //Create a variable to store the port number
 const PORT = process.env.PORT;
 const customerRoutes = require("./routes/customer.routes"); // Import the customer routes
-
+const serviceRoutes = require("./routes/service.routes");
 // Create the web server
 const app = express();
 // Use the cors middleware
@@ -24,7 +24,7 @@ const routes = require("./routes");
 app.use(routes);
 
 app.use(customerRoutes); // Customer routes will already handle /api
-
+app.use(serviceRoutes); // Service routes will already handle /api/services
 //Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

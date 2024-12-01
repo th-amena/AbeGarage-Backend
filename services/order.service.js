@@ -78,6 +78,55 @@ async function createOrderr(order) {
     console.log(error);
   }
 }
+//GET all orders
+async function getAllOrders() {
+  const query =
+    `SELECT 
+
+    orders.order_id,
+
+    orders.order_date,
+
+    orders.order_hash, 
+
+    customer_info.customer_first_name, 
+
+    customer_info.customer_last_name,
+
+    customer_identifier.customer_email, 
+
+    customer_identifier.customer_phone_number, 
+
+    customer_vehicle_info.vehicle_make, 
+
+    customer_vehicle_info.vehicle_year,
+
+    customer_vehicle_info.vehicle_tag, 
+
+    employee_info.employee_first_name, 
+
+    employee_info.employee_last_name, 
+
+    order_status.order_status 
+
+    FROM orders 
+
+    INNER JOIN customer_info ON orders.customer_id = customer_info.customer_id 
+
+    INNER JOIN  customer_identifier ON orders.customer_id = customer_identifier.customer_id 
+
+    INNER JOIN customer_vehicle_info ON orders.vehicle_id = customer_vehicle_info.vehicle_id 
+
+    INNER JOIN employee_info ON orders.employee_id = employee_info.employee_id 
+
+    INNER JOIN order_status ON orders.order_id = order_status.order_id 
+
+    INNER JOIN order_info ON orders.order_id = order_info.order_id
+    
+    ORDER BY orders.order_id DESC`
+  const [rows] = await connection.query(query);
+  return rows;
+}
 
 //GET single order
 async function getsingleOrderr(order_hash) {
@@ -103,5 +152,6 @@ async function getsingleOrderr(order_hash) {
 }
 module.exports = {
   createOrderr,
+  getAllOrders,
   getsingleOrderr
 };

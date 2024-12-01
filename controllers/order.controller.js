@@ -1,5 +1,5 @@
 // import order service
-const { createOrderr, getsingleOrderr } = require("../services/order.service");
+const { createOrderr,getAllOrders, getsingleOrderr } = require("../services/order.service");
 
 async function createOrder(req, res, next) {
   // console.log(req.body.order_services.length);
@@ -27,6 +27,21 @@ async function createOrder(req, res, next) {
   }
 }
 
+async function getAllOrderrs(req, res, next) {
+  // Call the getAllOrders method from the order service
+  const orders = await getAllOrders();
+  // console.log(orders);
+  if (!orders) {
+    res.status(400).json({
+      error: "Failed to get all orders! No orders!",
+    });
+  } else {
+    res.status(200).json({
+      status: "success",
+      data: orders,
+    });
+  }
+}
 async function getsingleOrder(req, res, next) {
   const {order_hash} = req.params;
 
@@ -53,5 +68,6 @@ async function getsingleOrder(req, res, next) {
 
 module.exports = {
   createOrder,
-  getsingleOrder
+  getsingleOrder,
+  getAllOrderrs
 };

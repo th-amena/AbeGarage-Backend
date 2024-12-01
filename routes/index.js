@@ -22,5 +22,5 @@ router.use(serviceRoutes);
 
 router.use(loginRoutes);
 // Export the router
-module.exports = router;
 
+module.exports = router;

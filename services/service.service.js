@@ -111,8 +111,20 @@ const updateService = async (id, { service_name, service_description }) => {
       throw new Error(error.message); // Throw the error message to the controller
    }
 };
-
+const getAllService = async () => {
+   try {
+     const query = "SELECT * FROM common_services";
+ 
+     const [response] = await conn.query(query);
+     // console.log(response);
+     return response;
+   } catch (error) {
+     console.log(error);
+     return error;
+   }
+ };
 module.exports = {
    addService,
    updateService,
+   getAllService
   };

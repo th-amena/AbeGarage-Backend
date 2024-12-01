@@ -9,6 +9,7 @@ const cors = require("cors");
 const router = require("./routes");
 //Create a variable to store the port number
 const PORT = process.env.PORT;
+const customerRoutes = require("./routes/customer.routes"); // Import the customer routes
 
 // Create the web server
 const app = express();

@@ -1,39 +1,96 @@
-const orderService = require("../services/order.service");
-const conn = require("../config/db.config");
+// import order service
+const {
+  createOrderr,
+  getAllOrders,
+  getsingleOrderr,
+  updateOrderr,
+} = require("../services/order.service");
+
+async function createOrder(req, res, next) {
+  // console.log(req.body.service_completed.length);
+
+  if (req.body.service_completed.length < 1) {
+    return res.status(400).json({
+      error: "Please select at least one service!",
+    });
+  }
+  try {
+    const createdOrder = await createOrderr(req.body);
+
+    if (!createdOrder) {
+      return res.status(400).json({
+        error: "Failed/Incomplete to add the Order!",
+      });
+    } else {
+      res.status(200).json({ status: "Order added successfully" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(404).json({
+      error: "Something went wrong!",
+    });
+  }
+}
+
+async function getAllOrderrs(req, res, next) {
+  // Call the getAllOrders method from the order service
+  const orders = await getAllOrders();
+  // console.log(orders);
+  if (!orders) {
+    res.status(400).json({
+      error: "Failed to get all orders! No orders!",
+    });
+  } else {
+    res.status(200).json({
+      status: "success",
+      data: orders,
+    });
+  }
+}
+async function getsingleOrder(req, res, next) {
+  const { order_hash } = req.params;
+
+  try {
+    const singleOrder = await getsingleOrderr(order_hash);
+
+    if (!singleOrder[0]?.order_id) {
+      res.status(400).json({
+        error: "Failed to get the Order!",
+      });
+    } else {
+      res.status(200).json({
+        status: "Order retrieved successfully! ",
+        singleOrder: singleOrder,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(404).json({
+      error: "Something went wrong!",
+    });
+  }
+}
 
 // Update an order
 async function updateOrder(req, res) {
   try {
-    const { order_hash } = req.params; // Ensure order_id is obtained from params
     const orderData = req.body;
 
-    const requiredFields = [
-      "order_description",
-      "estimated_completion_date",
-      "completion_date",
-      "order_services",
-    ];
-
-    for (const field of requiredFields) {
-      if (orderData[field] === undefined) {
-        return res.status(400).json({ error: `Field ${field} is required` });
-      }
-    }
-
     if (
-      !Array.isArray(orderData.order_services) ||
-      orderData.order_services.length === 0
+      !Array.isArray(orderData.service_completed) ||
+      orderData.service_completed.length === 0
     ) {
       return res
         .status(400)
-        .json({ error: "Field 'order_services' must be a non-empty array" });
+        .json({ error: "Field 'service_completed' must be a non-empty array" });
     }
-    console.log("orderData:", orderData);
-    console.log("order_hash:", order_hash);
     
-    const result = await orderService.updateOrder(orderData,order_hash );
-    res.status(200).json(result);
+    const result = await updateOrderr(orderData);
     
+    if (!result) {
+      return res.status(400).json({ error: "Failed to update the order" });
+    }
+    res.status(200).json({ message: "Order updated successfully" });
   } catch (error) {
     console.error(error);
     res
@@ -42,4 +99,9 @@ async function updateOrder(req, res) {
   }
 }
 
-module.exports = {updateOrder};
+module.exports = {
+  createOrder,
+  getsingleOrder,
+  getAllOrderrs,
+  updateOrder,
+};

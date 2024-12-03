@@ -1,12 +1,27 @@
 const express = require("express");
 const router = express.Router();
-const orderController = require("../controllers/order.controller");
+const { createOrder , getAllOrderrs, getsingleOrder, updateOrder } = require("../controllers/order.controller");
 
-// import the authMiddleware
-const { verifyToken, isAdmin } = require("../middlewares/auth.middleware");
+
+// POST request to create a new order
+router.post("/api/order", createOrder);
+
+//GET request to get all orders
+router.get(
+    "/api/orders",
+  //   authMiddleware.verifyToken, // Ensures the user is authenticated
+  //   authMiddleware.isAdmin, // Ensures the user has admin privileges
+  getAllOrderrs
+  );
+
+//GET request to get single order
+router.get("/api/order/:order_hash", getsingleOrder);
 
 // Route to update an order
-router.put("/api/order/:order_hash", orderController.updateOrder);
+router.put("/api/order", updateOrder);
 //
 
 module.exports = router;
+
+
+

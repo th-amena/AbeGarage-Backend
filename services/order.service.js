@@ -1,138 +1,203 @@
-const conn = require("../config/db.config");
-// updating createOrder function
+// import the query function from the db.config.js file
+const connection = require("../config/db.config");
 
-async function updateOrder(orderData, order_hash) {
+// import the crypto module to generate random id
+const crypto = require("crypto");
+// create order sevice
+async function createOrderr(order) {
   try {
-    const {
-      order_description,
-      estimated_completion_date,
-      completion_date,
-      order_services,
-      order_status,
-    } = orderData;
+    const hash_id = crypto.randomUUID();
 
-    // Validate required fields
-    if (!order_hash || !order_description) {
-      throw new Error("Order ID and description are required");
-    }
+    ////////////////////////////////////////////////////////////////
+    // insert the orders data in to the orders table
+    const query =
+      "INSERT INTO orders (employee_id, customer_id, vehicle_id, order_date, active_order, order_hash) VALUES (?,?,?,CURRENT_TIMESTAMP,1,?)";
 
-    // Validate order_services
-    if (!Array.isArray(order_services) || order_services.length === 0) {
-      throw new Error("Order services must be a non-empty array");
-    }
-
-    const updateOrderQuery = `
-      UPDATE orders
-      SET order_description = ?
-      WHERE order_hash = ?
-    `;
-    const result = await conn.query(updateOrderQuery, [
-      order_description,
-      order_hash,
+    const [rows] = await connection.query(query, [
+      order.employee_id,
+      order.customer_id,
+      order.vehicle_id,
+      hash_id,
     ]);
-    console.log("result for the first order service:", result);
-
-    if (result.affectedRows === 0) {
-      throw new Error(`Order with ID ${hash} not found`);
+    if (rows.affectedRows !== 1) {
+      return false;
     }
 
-    const orderInfoQuery = `
-      UPDATE order_info
-      SET estimated_completion_date = ?, 
-          completion_date = ?
-          WHERE order_hash = ?
-    `;
-    const resultTwo = await conn.query(orderInfoQuery, [
-      estimated_completion_date || null, // Replace undefined with null
-      completion_date || null, // Replace undefined with null
-      order_hash,
-    ]);
-    // console.log("resultTwo:",resultTwo)
+    const order_id = rows.insertId;
 
-    const deleteOrderServicesQuery = `
-      DELETE FROM order_services WHERE order_hash = ?
-    `;
-    await conn.query(deleteOrderServicesQuery, [order_hash]);
-    console.log("deleteOrderServicesQuery:", deleteOrderServicesQuery);
-    for (const service of order_services) {
-      // Verify that service_id exists in common_services
-      const serviceCheckQuery = `
-          SELECT service_id FROM common_services WHERE service_id = ?
-          
-        `;
-      const serviceCheckResult = await conn.query(serviceCheckQuery, [
-        service.service_id,
-      ]);
+    ////////////////////////////////////////////////////////////
+    // insert the orders data in to the orders info table
+    const query2 =
+      "INSERT INTO order_info (order_id, order_total_price, estimated_completion_date, additional_request, notes_for_internal_use, notes_for_customer, additional_requests_completed) VALUES (?,?,?,?,?,?,0)";
 
-      if (
-        !Array.isArray(serviceCheckResult) ||
-        serviceCheckResult.length === 0
-      ) {
-        throw new Error(
-          `Service with ID ${service.service_id} does not exist in common_services`
-        );
-      }
-
-      const serviceCompletedValue = service.service_completed ? 1 : 0;
-      // Insert or update order_service
-      const orderServiceQuery = `
-      INSERT INTO order_services (order_hash, service_id, service_completed)
-        VALUES (?, ?, ?)
-        ON DUPLICATE KEY UPDATE
-          service_completed = VALUES(service_completed)
-    `;
-      const orderServiceResult = await conn.query(orderServiceQuery, [
-        order_hash,
-        service.service_id,
-        serviceCompletedValue,
-      ]);
-
-      console.log("OrderServiceResult:", orderServiceResult);
-      if (orderServiceResult.affectedRows === 0) {
-        throw new Error("Failed to create or update order service");
-      }
-    }
-
-    // Update or insert order status
-    const statusExistsQuery = `
-      SELECT order_status_hash FROM order_status WHERE order_hash = ?
-    `;
-    const statusExistsResult = await conn.query(statusExistsQuery, [
-      order_hash,
+    const [rows2] = await connection.query(query2, [
+      order_id,
+      order.order_total_price,
+      order.estimated_completion_date,
+      order.additional_request,
+      order.notes_for_internal_use,
+      order.notes_for_customer,
     ]);
 
-    if (statusExistsResult.length > 0) {
-      // If status exists, update it
-      const updateStatusQuery = `
-        UPDATE order_status
-        SET order_status = ?
-        WHERE order_hash = ?
-      `;
-      const updateStatusResult = await conn.query(updateStatusQuery, [
-        order_status,
-        order_hash,
-      ]);
-      if (updateStatusResult.affectedRows === 0) {
-        throw new Error("Failed to update order status");
-      }
-    } else {
-      // If status does not exist, insert it
-      const insertStatusQuery = `
-        INSERT INTO order_status (order_hash, order_status)
-        VALUES (?, ?)
-      `;
-      const insertStatusResult = await conn.query(insertStatusQuery, [
-        order_hash,
-        order_status,
-      ]);
-      if (insertStatusResult.affectedRows === 0) {
-        throw new Error("Failed to insert order status");
-      }
+    if (rows2.affectedRows !== 1) {
+      return false;
     }
 
-    return { message: "Order updated successfully" };
+    /////////////////////////////////////////////////////////////////
+    // insert the order data in to the order service table
+    const query3 =
+      "INSERT INTO service_completed (order_id, service_id, service_completed) VALUES (?, ?, ?)";
+
+    let afeectedRows3 = 0;
+
+    for (let i = 0; i < order.service_completed.length; i++) {
+      const values = [order_id, order.service_completed[i].service_id, 0];
+      const rows3 = await connection.query(query3, values);
+
+      afeectedRows3 = rows3.affectedRows + afeectedRows3;
+    }
+
+    if (afeectedRows3 < 1) {
+      return false;
+    }
+
+    /////////////////////////////////////////////////////////////////
+    // insert the order data in to the order status table
+
+    const query4 =
+      "INSERT INTO order_status (order_id, order_status) VALUES (?,?)";
+
+    const [row4] = await connection.query(query4, [order_id, 0]);
+
+    if (row4.affectedRows !== 1) {
+      return false;
+    }
+
+    return true;
   } catch (error) {
-    throw new Error(error);
+    console.log(error);
   }
 }
-module.exports = { updateOrder };
+//GET all orders
+async function getAllOrders() {
+  const query = `SELECT 
+
+    orders.order_id,
+
+    orders.order_date,
+
+    orders.order_hash, 
+
+    customer_info.customer_first_name, 
+
+    customer_info.customer_last_name,
+
+    customer_identifier.customer_email, 
+
+    customer_identifier.customer_phone_number, 
+
+    customer_vehicle_info.vehicle_make, 
+
+    customer_vehicle_info.vehicle_year,
+
+    customer_vehicle_info.vehicle_tag, 
+
+    employee_info.employee_first_name, 
+
+    employee_info.employee_last_name, 
+
+    order_status.order_status 
+
+    FROM orders 
+
+    INNER JOIN customer_info ON orders.customer_id = customer_info.customer_id 
+
+    INNER JOIN  customer_identifier ON orders.customer_id = customer_identifier.customer_id 
+
+    INNER JOIN customer_vehicle_info ON orders.vehicle_id = customer_vehicle_info.vehicle_id 
+
+    INNER JOIN employee_info ON orders.employee_id = employee_info.employee_id 
+
+    INNER JOIN order_status ON orders.order_id = order_status.order_id 
+
+    INNER JOIN order_info ON orders.order_id = order_info.order_id
+    
+    ORDER BY orders.order_id DESC`;
+  const [rows] = await connection.query(query);
+  return rows;
+}
+
+//GET single order
+async function getsingleOrderr(order_hash) {
+  try {
+    const query =
+      "SELECT orders.order_id, orders.order_hash,orders.order_date, customer_info.customer_first_name, customer_info.customer_last_name, customer_info.active_customer_status, customer_identifier.customer_email, customer_identifier.customer_phone_number, customer_vehicle_info.vehicle_make, customer_vehicle_info.vehicle_color,customer_vehicle_info.vehicle_tag,customer_vehicle_info.vehicle_year,customer_vehicle_info.vehicle_mileage,customer_vehicle_info.vehicle_serial, employee_info.employee_first_name, employee_info.employee_last_name, order_status.order_status, order_info.additional_request, order_info.order_total_price, order_info.additional_requests_completed FROM orders INNER JOIN customer_info ON orders.customer_id = customer_info.customer_id INNER JOIN  customer_identifier ON orders.customer_id = customer_identifier.customer_id INNER JOIN customer_vehicle_info ON orders.vehicle_id = customer_vehicle_info.vehicle_id INNER JOIN employee_info ON orders.employee_id = employee_info.employee_id INNER JOIN order_status ON orders.order_id = order_status.order_id INNER JOIN order_info ON orders.order_id = order_info.order_id WHERE orders.order_hash = ?";
+
+    const [rows] = await connection.query(query, [order_hash]);
+
+    if (rows.length < 1) {
+      return;
+    }
+
+    const query2 =
+      "SELECT orders.order_hash, service_completed.service_id, service_completed.order_service_id, common_services.service_name, common_services.service_description, service_completed.service_completed FROM service_completed INNER JOIN orders ON service_completed.order_id = orders.order_id INNER JOIN common_services ON service_completed.service_id = common_services.service_id WHERE orders.order_hash = ?";
+
+    const [rows2] = await connection.query(query2, [order_hash]);
+
+    return [{ ...rows[0], service_completed: rows2 }];
+  } catch (error) {
+    // console.log(error);
+  }
+}
+async function updateOrderr(order) {
+try {
+  // console.log(order.service_completed[0].completed_value);
+  const newVariable = JSON.parse(JSON.stringify(order.service_completed));
+  const query =
+    "UPDATE order_services SET service_completed = ? WHERE order_service_id = ?";
+
+  let afeectedRows = 0;
+  for (let i = 0; i < order.service_completed.length; i++) {
+    const values = [
+      newVariable[i].completed_value,
+      newVariable[i].order_service_id,
+    ];
+    // console.log(values);
+    const rows = await connection.query(query, values);
+    // console.log(rows)
+    afeectedRows = rows.affectedRows + afeectedRows;
+  }
+
+  if (afeectedRows < 1) {
+    return;
+  }
+
+  const query2 =
+    "SELECT service_completed FROM order_services WHERE order_id = ?";
+
+  const [rows2] = await connection.query(query2, [order.order_id]);
+
+  for (let i = 0; i < rows2.length; i++) {
+    if (rows2[i].service_completed === 0) {
+      return afeectedRows;
+    }
+  }
+
+  const query3 = "UPDATE order_status SET order_status = ? WHERE order_id = ?";
+
+  const [rows3] = await connection.query(query3, [1, order.order_id]);
+
+  if (rows3.affectedRows > 0) {
+    
+    return rows3.affectedRows;
+  }
+} catch (error) {
+  console.log(error);
+}
+}
+module.exports = {
+  createOrderr,
+  getAllOrders,
+  getsingleOrderr,
+  updateOrderr
+};

@@ -46,12 +46,12 @@ async function createOrderr(order) {
     /////////////////////////////////////////////////////////////////
     // insert the order data in to the order service table
     const query3 =
-      "INSERT INTO order_services (order_id, service_id, service_completed) VALUES (?, ?, ?)";
+      "INSERT INTO service_completed (order_id, service_id, service_completed) VALUES (?, ?, ?)";
 
     let afeectedRows3 = 0;
 
-    for (let i = 0; i < order.order_services.length; i++) {
-      const values = [order_id, order.order_services[i].service_id, 0];
+    for (let i = 0; i < order.service_completed.length; i++) {
+      const values = [order_id, order.service_completed[i].service_id, 0];
       const rows3 = await connection.query(query3, values);
 
       afeectedRows3 = rows3.affectedRows + afeectedRows3;
@@ -80,8 +80,7 @@ async function createOrderr(order) {
 }
 //GET all orders
 async function getAllOrders() {
-  const query =
-    `SELECT 
+  const query = `SELECT 
 
     orders.order_id,
 
@@ -123,7 +122,7 @@ async function getAllOrders() {
 
     INNER JOIN order_info ON orders.order_id = order_info.order_id
     
-    ORDER BY orders.order_id DESC`
+    ORDER BY orders.order_id DESC`;
   const [rows] = await connection.query(query);
   return rows;
 }
@@ -141,17 +140,64 @@ async function getsingleOrderr(order_hash) {
     }
 
     const query2 =
-      "SELECT orders.order_hash, order_services.service_id, order_services.order_service_id, common_services.service_name, common_services.service_description, order_services.service_completed FROM order_services INNER JOIN orders ON order_services.order_id = orders.order_id INNER JOIN common_services ON order_services.service_id = common_services.service_id WHERE orders.order_hash = ?";
+      "SELECT orders.order_hash, service_completed.service_id, service_completed.order_service_id, common_services.service_name, common_services.service_description, service_completed.service_completed FROM service_completed INNER JOIN orders ON service_completed.order_id = orders.order_id INNER JOIN common_services ON service_completed.service_id = common_services.service_id WHERE orders.order_hash = ?";
 
     const [rows2] = await connection.query(query2, [order_hash]);
 
-    return [{ ...rows[0], order_services: rows2 }];
+    return [{ ...rows[0], service_completed: rows2 }];
   } catch (error) {
     // console.log(error);
   }
 }
+async function updateOrderr(order) {
+try {
+  // console.log(order.service_completed[0].completed_value);
+  const newVariable = JSON.parse(JSON.stringify(order.service_completed));
+  const query =
+    "UPDATE order_services SET service_completed = ? WHERE order_service_id = ?";
+
+  let afeectedRows = 0;
+  for (let i = 0; i < order.service_completed.length; i++) {
+    const values = [
+      newVariable[i].completed_value,
+      newVariable[i].order_service_id,
+    ];
+    // console.log(values);
+    const rows = await connection.query(query, values);
+    // console.log(rows)
+    afeectedRows = rows.affectedRows + afeectedRows;
+  }
+
+  if (afeectedRows < 1) {
+    return;
+  }
+
+  const query2 =
+    "SELECT service_completed FROM order_services WHERE order_id = ?";
+
+  const [rows2] = await connection.query(query2, [order.order_id]);
+
+  for (let i = 0; i < rows2.length; i++) {
+    if (rows2[i].service_completed === 0) {
+      return afeectedRows;
+    }
+  }
+
+  const query3 = "UPDATE order_status SET order_status = ? WHERE order_id = ?";
+
+  const [rows3] = await connection.query(query3, [1, order.order_id]);
+
+  if (rows3.affectedRows > 0) {
+    
+    return rows3.affectedRows;
+  }
+} catch (error) {
+  console.log(error);
+}
+}
 module.exports = {
   createOrderr,
   getAllOrders,
-  getsingleOrderr
+  getsingleOrderr,
+  updateOrderr
 };

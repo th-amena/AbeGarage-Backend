@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const { createOrder , getAllOrderrs, getsingleOrder } = require("../controllers/order.controller");
+const { createOrder , getAllOrderrs, getsingleOrder, updateOrder } = require("../controllers/order.controller");
+
 
 // POST request to create a new order
 router.post("/api/order", createOrder);
@@ -16,6 +17,9 @@ router.get(
 //GET request to get single order
 router.get("/api/order/:order_hash", getsingleOrder);
 
+// Route to update an order
+router.put("/api/order", updateOrder);
+//
 
 module.exports = router;
 

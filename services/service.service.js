@@ -138,10 +138,38 @@ const getAllService = async () => {
      return error;
    }
  };
+
+ async function deleteService(serviceId) {
+  const connection = await conn.getConnection(); // Use a transactional connection
+  try {
+    await connection.beginTransaction();
+
+    // Delete dependent rows in the order_services table first
+    await connection.query(`DELETE FROM order_services WHERE service_id = ?`, [
+      serviceId,
+    ]);
+
+    // Then delete the service from the common_services table
+    const [result] = await connection.query(
+      `DELETE FROM common_services WHERE service_id = ?`,
+      [serviceId]
+    );
+
+    await connection.commit(); // Commit the transaction
+
+    return result.affectedRows > 0; // Returns true if a row was deleted
+  } catch (error) {
+    await connection.rollback(); // Rollback the transaction on error
+    throw error; // Rethrow the error for proper error handling
+  } finally {
+    connection.release(); // Release the connection back to the pool
+}
+}
  
 module.exports = {
    addService,
    updateService,
    getAllService,
-   getServiceById
+   getServiceById,
+   deleteService
   };

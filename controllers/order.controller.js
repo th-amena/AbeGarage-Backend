@@ -9,10 +9,10 @@ const {
 async function createOrder(req, res, next) {
   // console.log(req.body.service_completed.length);
 
-  if (req.body.service_completed.length < 1) {
-    return res.status(400).json({
-      error: "Please select at least one service!",
-    });
+  if (req.body.order_services.length < 1) {
+     return res.status(400).json({
+        error: "Please select at least one service!",
+     });
   }
   try {
     const createdOrder = await createOrderr(req.body);

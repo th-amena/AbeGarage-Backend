@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const { createOrder , getAllOrderrs, getsingleOrder, updateOrder } = require("../controllers/order.controller");
 
-
 // POST request to create a new order
 router.post("/api/order", createOrder);
 

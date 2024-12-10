@@ -46,12 +46,12 @@ async function createOrderr(order) {
     /////////////////////////////////////////////////////////////////
     // insert the order data in to the order service table
     const query3 =
-      "INSERT INTO service_completed (order_id, service_id, service_completed) VALUES (?, ?, ?)";
+      "INSERT INTO order_services(order_id, service_id, service_completed) VALUES (?, ?, ?)";
 
     let afeectedRows3 = 0;
 
-    for (let i = 0; i < order.service_completed.length; i++) {
-      const values = [order_id, order.service_completed[i].service_id, 0];
+    for (let i = 0; i < order.order_services.length; i++) {
+      const values = [order_id, order.order_services[i].service_id, 0];
       const rows3 = await connection.query(query3, values);
 
       afeectedRows3 = rows3.affectedRows + afeectedRows3;
@@ -134,19 +134,19 @@ async function getsingleOrderr(order_hash) {
       "SELECT orders.order_id, orders.order_hash,orders.order_date, customer_info.customer_first_name, customer_info.customer_last_name, customer_info.active_customer_status, customer_identifier.customer_email, customer_identifier.customer_phone_number, customer_vehicle_info.vehicle_make, customer_vehicle_info.vehicle_color,customer_vehicle_info.vehicle_tag,customer_vehicle_info.vehicle_year,customer_vehicle_info.vehicle_mileage,customer_vehicle_info.vehicle_serial, employee_info.employee_first_name, employee_info.employee_last_name, order_status.order_status, order_info.additional_request, order_info.order_total_price, order_info.additional_requests_completed FROM orders INNER JOIN customer_info ON orders.customer_id = customer_info.customer_id INNER JOIN  customer_identifier ON orders.customer_id = customer_identifier.customer_id INNER JOIN customer_vehicle_info ON orders.vehicle_id = customer_vehicle_info.vehicle_id INNER JOIN employee_info ON orders.employee_id = employee_info.employee_id INNER JOIN order_status ON orders.order_id = order_status.order_id INNER JOIN order_info ON orders.order_id = order_info.order_id WHERE orders.order_hash = ?";
 
     const [rows] = await connection.query(query, [order_hash]);
-
+    
     if (rows.length < 1) {
       return;
     }
 
     const query2 =
-      "SELECT orders.order_hash, service_completed.service_id, service_completed.order_service_id, common_services.service_name, common_services.service_description, service_completed.service_completed FROM service_completed INNER JOIN orders ON service_completed.order_id = orders.order_id INNER JOIN common_services ON service_completed.service_id = common_services.service_id WHERE orders.order_hash = ?";
+      "SELECT orders.order_hash, order_services.service_id, order_services.order_service_id, common_services.service_name, common_services.service_description, order_services.service_completed FROM order_services INNER JOIN orders ON order_services.order_id = orders.order_id INNER JOIN common_services ON order_services.service_id = common_services.service_id WHERE orders.order_hash = ?";
 
     const [rows2] = await connection.query(query2, [order_hash]);
 
-    return [{ ...rows[0], service_completed: rows2 }];
+    return [{ ...rows[0], order_services: rows2 }];
   } catch (error) {
-    // console.log(error);
+    console.log(error);
   }
 }
 async function updateOrderr(order) {

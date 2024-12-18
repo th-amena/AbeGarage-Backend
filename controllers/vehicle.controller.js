@@ -1,7 +1,4 @@
-const {
-  addVehiclee,
-  getSingleVehiclee,
-} = require("../services/vehicle.service");
+const { addVehiclee, getSingleVehiclee, updateVehiclee } = require("../services/vehicle.service");
 
 async function addVehicle(req, res, next) {
   console.log(req.body);
@@ -55,4 +52,58 @@ async function getSingleVehicle(req, res, next) {
   }
 }
 
-module.exports = { addVehicle, getSingleVehicle };
+// A function to update a vehicle by ID
+const updateVehicle = async (req, res) => {
+  const { id } = req.params;  // Get vehicle ID from the URL parameter
+  const {
+    vehicle_year,
+    vehicle_make,
+    vehicle_model,
+    vehicle_type,
+    vehicle_mileage,
+    vehicle_tag,
+    vehicle_serial,
+    vehicle_color
+  } = req.body;  // Get updated vehicle data from the request body
+
+  // Validate vehicle data
+  if (
+    !vehicle_year ||
+    !vehicle_make ||
+    !vehicle_model ||
+    !vehicle_type ||
+    !vehicle_mileage ||
+    !vehicle_tag ||
+    !vehicle_serial ||
+    !vehicle_color
+  ) {
+    return res.status(400).json({
+      message: "All fields are required to update the vehicle.",
+    });
+  }
+
+  try {
+    // Call the service to update the vehicle
+    const updateResult = await updateVehiclee(id, {  // Use the imported function directly here
+      vehicle_year,
+      vehicle_make,
+      vehicle_model,
+      vehicle_type,
+      vehicle_mileage,
+      vehicle_tag,
+      vehicle_serial,
+      vehicle_color
+    });
+
+    if (updateResult === "Vehicle not found") {
+      return res.status(404).json({ message: "Vehicle not found." });
+    }
+
+    res.status(200).json({ message: "Vehicle updated successfully" }); // Send success response
+  } catch (error) {
+    console.error("Error in updateVehicle:", error.message);
+    res.status(500).json({ message: "Internal server error" }); // Generic error response
+  }
+};
+
+module.exports = { addVehicle, getSingleVehicle, updateVehicle };

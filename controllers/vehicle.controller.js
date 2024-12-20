@@ -1,4 +1,4 @@
-const { addVehiclee, getSingleVehiclee, updateVehiclee } = require("../services/vehicle.service");
+const { addVehiclee, getSingleVehiclee,getVehicleeById, updateVehiclee } = require("../services/vehicle.service");
 
 async function addVehicle(req, res, next) {
   console.log(req.body);
@@ -52,6 +52,33 @@ async function getSingleVehicle(req, res, next) {
   }
 }
 
+// a function to get a vehicle by single by ID 
+async function getVehicleById(req, res, next) {
+  console.log(req.params);
+
+  try {
+    const singleVehicle = await getVehicleeById(req.params);
+
+    // console.log(SingleVehicle.length)
+
+    if (singleVehicle.length < 1) {
+      return res.status(400).json({
+        error: "No Vehicle Added!",
+      });
+    } else {
+      return res.status(200).json({
+        status: "Vehicle found!!",
+        singleVehicle: singleVehicle,
+      });
+    }
+  } catch (error) {
+    // console.log("kkk");
+    console.log(error);
+    res.status(400).json({
+      error: "Something went wrong!",
+    });
+  }
+}
 // A function to update a vehicle by ID
 const updateVehicle = async (req, res) => {
   const { id } = req.params;  // Get vehicle ID from the URL parameter
@@ -106,4 +133,4 @@ const updateVehicle = async (req, res) => {
   }
 };
 
-module.exports = { addVehicle, getSingleVehicle, updateVehicle };
+module.exports = { addVehicle, getSingleVehicle,getVehicleById, updateVehicle };

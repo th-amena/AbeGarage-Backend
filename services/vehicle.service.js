@@ -63,6 +63,24 @@ async function getSingleVehiclee(single) {
     return error;  // Return error if something goes wrong
   }
 }
+// get the vehicle by id 
+// get Customer Vehiclee by customer id
+async function getVehicleeById(id) {
+  try {
+    const vehicle_id = id.id;
+    console.log(id);
+
+    // get the customer vehicle by its id
+    const query1 = "SELECT * FROM customer_vehicle_info WHERE vehicle_id = ? ";
+
+    const [rows1] = await connection.query(query1, [vehicle_id]);
+      console.log(rows1)
+    return rows1;
+  } catch (error) {
+    console.log(error)
+    return;
+  }
+}
 
 // Update customer vehicle information
 async function updateVehiclee(vehicle_id, vehicleData) {
@@ -104,4 +122,4 @@ async function updateVehiclee(vehicle_id, vehicleData) {
   }
 }
 
-module.exports = { addVehiclee, getSingleVehiclee, updateVehiclee };
+module.exports = { addVehiclee, getSingleVehiclee,getVehicleeById, updateVehiclee };

@@ -149,51 +149,99 @@ async function getsingleOrderr(order_hash) {
     console.log(error);
   }
 }
-async function updateOrderr(order) {
-try {
-  // console.log(order.service_completed[0].completed_value);
-  const newVariable = JSON.parse(JSON.stringify(order.service_completed));
-  const query =
-    "UPDATE order_services SET service_completed = ? WHERE order_service_id = ?";
+// async function updateOrderr(order) {
+// try {
+//   // console.log(order.service_completed[0].completed_value);
+//   const newVariable = JSON.parse(JSON.stringify(order.service_completed));
+//   const query =
+//     "UPDATE order_services SET service_completed = ? WHERE order_service_id = ?";
 
-  let afeectedRows = 0;
-  for (let i = 0; i < order.service_completed.length; i++) {
-    const values = [
-      newVariable[i].completed_value,
-      newVariable[i].order_service_id,
-    ];
-    // console.log(values);
-    const rows = await connection.query(query, values);
-    // console.log(rows)
-    afeectedRows = rows.affectedRows + afeectedRows;
-  }
+//   let afeectedRows = 0;
+//   for (let i = 0; i < order.service_completed.length; i++) {
+//     const values = [
+//       newVariable[i].completed_value,
+//       newVariable[i].order_service_id,
+//     ];
+//     // console.log(values);
+//     const rows = await connection.query(query, values);
+//     // console.log(rows)
+//     afeectedRows = rows.affectedRows + afeectedRows;
+//   }
 
-  if (afeectedRows < 1) {
-    return;
-  }
+//   if (afeectedRows < 1) {
+//     return;
+//   }
 
-  const query2 =
-    "SELECT service_completed FROM order_services WHERE order_id = ?";
+//   const query2 =
+//     "SELECT service_completed FROM order_services WHERE order_id = ?";
 
-  const [rows2] = await connection.query(query2, [order.order_id]);
+//   const [rows2] = await connection.query(query2, [order.order_id]);
 
-  for (let i = 0; i < rows2.length; i++) {
-    if (rows2[i].service_completed === 0) {
-      return afeectedRows;
-    }
-  }
+//   for (let i = 0; i < rows2.length; i++) {
+//     if (rows2[i].service_completed === 0) {
+//       return afeectedRows;
+//     }
+//   }
 
-  const query3 = "UPDATE order_status SET order_status = ? WHERE order_id = ?";
+//   const query3 = "UPDATE order_status SET order_status = ? WHERE order_id = ?";
 
-  const [rows3] = await connection.query(query3, [1, order.order_id]);
+//   const [rows3] = await connection.query(query3, [1, order.order_id]);
 
-  if (rows3.affectedRows > 0) {
+//   if (rows3.affectedRows > 0) {
     
-    return rows3.affectedRows;
-  }
-} catch (error) {
-  console.log(error);
-}
+//     return rows3.affectedRows;
+//   }
+// } catch (error) {
+//   console.log(error);
+// }
+// }
+
+async function updateOrderr(order) {
+   try {
+      const query =
+         "UPDATE order_services SET service_completed = ? WHERE order_service_id = ?";
+
+      let afeectedRows = 0;
+
+      for (let i = 0; i < order.service_completed.length; i++) {
+         const values = [
+            order.service_completed[i].completed_value,
+            order.service_completed[i].order_service_id,
+         ];
+         const [rows] = await connection.query(query, values);
+         afeectedRows += rows.affectedRows;
+      }
+
+      if (afeectedRows < 1) {
+         console.log("No rows were updated. Verify inputs.");
+         return { message: "No rows updated", afeectedRows };
+      }
+
+      const query2 =
+         "SELECT service_completed FROM order_services WHERE order_id = ?";
+      const [rows2] = await connection.query(query2, [order.order_id]);
+
+      const allCompleted = rows2.every((row) => row.service_completed === 1);
+
+      if (!allCompleted) {
+         console.log("Some services are still incomplete.");
+         return { message: "Partial update completed", afeectedRows };
+      }
+
+      const query3 =
+         "UPDATE order_status SET order_status = ? WHERE order_id = ?";
+      const [rows3] = await connection.query(query3, [1, order.order_id]);
+
+      if (rows3.affectedRows > 0) {
+         console.log("Order status successfully updated.");
+         return { message: "Order completed successfully", afeectedRows };
+      }
+
+      return { message: "Order status update failed", afeectedRows };
+   } catch (error) {
+      console.error("Error in updateOrderr function:", error.message);
+      throw error;
+   }
 }
 
 module.exports = {

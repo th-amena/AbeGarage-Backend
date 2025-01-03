@@ -17,7 +17,7 @@ router.get(
 router.get("/api/order/:order_hash", getsingleOrder);
 
 // Route to update an order
-router.put("/api/order", updateOrder); 
+router.put("/api/order/update-order/:order_hash", updateOrder); 
 
 module.exports = router;
 

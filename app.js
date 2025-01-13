@@ -13,7 +13,7 @@ const customerRoutes = require("./routes/customer.routes"); // Import the custom
 
 // Create the web server
 const app = express();
-// Use the cors middleware
+// Use the cors middlewareclear
 app.use(cors());
 
 // Use the express.json middleware to parse JSON requests

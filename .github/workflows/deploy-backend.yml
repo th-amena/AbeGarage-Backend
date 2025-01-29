@@ -1,0 +1,46 @@
+name: Deploy Backend
+
+on:
+  push:
+    branches:
+      - main  # Runs when changes are pushed to 'main'
+
+jobs:
+  deploy:
+    name: Deploy Backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Deploy to EC2 (SCP)
+        uses: appleboy/scp-action@v0.1.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          source: "./*"  
+          target: "/var/www/abegarage2024.com/backend/"
+          rm: true  # Remove existing files before uploading new ones
+
+      - name: Restore .env file
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            mv /var/www/abegarage2024.com/.env /var/www/abegarage2024.com/backend/.env
+            ls -al /var/www/abegarage2024.com/backend/
+
+      - name: Install Dependencies & Restart Backend
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            cd /var/www/abegarage2024.com/backend/
+            npm install
+            pm2 restart app || pm2 start server.js --name app
